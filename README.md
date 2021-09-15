@@ -1,2 +1,2 @@
 # food-order
-food ordering app using react js
+Levw Meals! food ordering app using react js and Firebase to store the meals!
