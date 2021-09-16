@@ -5,9 +5,14 @@ import { useEffect, useState } from "react";
 
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isError, setIsError] = useState(false);
   function fetchMeals() {
     fetch("https://react-http-4f55f-default-rtdb.firebaseio.com/meals.json")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Something went wrong!");
+        return res.json();
+      })
       .then((data) => {
         const loadedMeals = [];
         for (const obj in data) {
@@ -19,6 +24,10 @@ const AvailableMeals = () => {
           });
         }
         setMeals(loadedMeals);
+        setIsLoaded(true);
+      })
+      .catch((e) => {
+        setIsError(true);
       });
   }
   useEffect(fetchMeals, []);
@@ -31,11 +40,24 @@ const AvailableMeals = () => {
       price={meal.price}
     />
   ));
+  let content;
+  if (isError) {
+    content = <p style={{ textAlign: "center" }}> Something Went Wrong! 😥</p>;
+  } else if (!isLoaded) {
+    content = <p style={{ textAlign: "center" }}> Loading...</p>;
+  } else {
+    content = <ul>{mealsList}</ul>;
+  }
 
   return (
     <section className={classes.meals}>
       <Card>
-        <ul>{mealsList}</ul>
+        {/* {isLoaded ? (
+          <ul>{mealsList}</ul>
+        ) : (
+          <p style={{ textAlign: "center" }}> Loading...</p>
+        )} */}
+        {content}
       </Card>
     </section>
   );
